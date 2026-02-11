@@ -667,6 +667,210 @@
             font-size: 4rem;
             margin-bottom: 1rem;
         }
+
+        /* Payment Modal */
+        .payment-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2001;
+        }
+
+        .payment-content {
+            position: relative;
+            z-index: 2002;
+            background: var(--bg-card);
+            border-radius: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .payment-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payment-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .payment-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: all 0.3s;
+        }
+
+        .payment-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .payment-body {
+            padding: 1.5rem;
+        }
+
+        .payment-amount {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .amount-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .payment-methods {
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .payment-method-option {
+            display: block;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+
+        .payment-method-option input[type="radio"] {
+            display: none;
+        }
+
+        .payment-method-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .payment-method-option input[type="radio"]:checked + .payment-method-card {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .payment-method-card:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method-icon {
+            font-size: 1.5rem;
+        }
+
+        .payment-method-name {
+            font-weight: 600;
+        }
+
+        .card-payment-form,
+        .ideal-bank-form {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .confirm-payment-btn {
+            width: 100%;
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .confirm-payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .confirm-payment-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .payment-security {
+            margin-top: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Card number formatting */
+        #cardNumber {
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
@@ -830,6 +1034,110 @@
         </div>
     </div>
 
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="payment-modal hidden">
+        <div class="payment-overlay" onclick="closePaymentModal()"></div>
+        <div class="payment-content">
+            <div class="payment-header">
+                <h2>Secure Payment</h2>
+                <button class="payment-close" onclick="closePaymentModal()">✕</button>
+            </div>
+            
+            <div class="payment-body">
+                <div class="payment-amount">
+                    <div class="amount-label">Total Amount</div>
+                    <div class="amount-value" id="paymentAmount">€0.00</div>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-method-title">Select Payment Method</div>
+                    
+                    <label class="payment-method-option">
+                        <input type="radio" name="paymentMethod" value="ideal" checked>
+                        <div class="payment-method-card">
+                            <span class="payment-method-icon">🏦</span>
+                            <span class="payment-method-name">iDEAL</span>
+                        </div>
+                    </label>
+
+                    <label class="payment-method-option">
+                        <input type="radio" name="paymentMethod" value="card">
+                        <div class="payment-method-card">
+                            <span class="payment-method-icon">💳</span>
+                            <span class="payment-method-name">Credit Card</span>
+                        </div>
+                    </label>
+
+                    <label class="payment-method-option">
+                        <input type="radio" name="paymentMethod" value="paypal">
+                        <div class="payment-method-card">
+                            <span class="payment-method-icon">🅿️</span>
+                            <span class="payment-method-name">PayPal</span>
+                        </div>
+                    </label>
+
+                    <label class="payment-method-option">
+                        <input type="radio" name="paymentMethod" value="applepay">
+                        <div class="payment-method-card">
+                            <span class="payment-method-icon">🍎</span>
+                            <span class="payment-method-name">Apple Pay</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Card Payment Form (shown when credit card selected) -->
+                <div id="cardPaymentForm" class="card-payment-form hidden">
+                    <div class="form-group">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-input" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="text" class="form-input" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CVV</label>
+                            <input type="text" class="form-input" id="cardCvv" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-input" id="cardName" placeholder="John Doe">
+                    </div>
+                </div>
+
+                <!-- iDEAL Bank Selection -->
+                <div id="idealBankForm" class="ideal-bank-form">
+                    <div class="form-group">
+                        <label class="form-label">Select Your Bank</label>
+                        <select class="form-select" id="idealBank">
+                            <option>Choose your bank</option>
+                            <option>ABN AMRO</option>
+                            <option>ING</option>
+                            <option>Rabobank</option>
+                            <option>SNS Bank</option>
+                            <option>ASN Bank</option>
+                            <option>Bunq</option>
+                            <option>Knab</option>
+                            <option>Triodos Bank</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="confirm-payment-btn" id="confirmPaymentBtn">
+                    <span id="processingText">Complete Payment</span>
+                    <span id="processingSpinner" class="hidden">Processing...</span>
+                </button>
+
+                <div class="payment-security">
+                    <span>🔒</span>
+                    <span>Secure payment powered by Stripe & Mollie</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Products Data
         const products = [
@@ -885,9 +1193,164 @@
             });
         });
 
-        document.getElementById('payButton').addEventListener('click', placeOrder);
+        document.getElementById('payButton').addEventListener('click', showPaymentModal);
+
+        // Payment method switching
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const method = e.target.value;
+                document.getElementById('cardPaymentForm').classList.toggle('hidden', method !== 'card');
+                document.getElementById('idealBankForm').classList.toggle('hidden', method !== 'ideal');
+            });
+        });
+
+        // Card number formatting
+        document.getElementById('cardNumber')?.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formatted;
+        });
+
+        // Expiry date formatting
+        document.getElementById('cardExpiry')?.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Confirm payment button
+        document.getElementById('confirmPaymentBtn')?.addEventListener('click', processPayment);
 
         // Functions
+        function showPaymentModal() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const name = document.getElementById('customerName').value;
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+
+            if (deliveryType === 'delivery') {
+                const section = document.getElementById('section').value;
+                const row = document.getElementById('row').value;
+                const seat = document.getElementById('seat').value;
+                
+                if (section === 'Select Section' || !row || !seat) {
+                    alert('Please fill in your seat details');
+                    return;
+                }
+            }
+
+            // Calculate total
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
+            const total = subtotal + deliveryFee;
+
+            // Show payment modal
+            document.getElementById('paymentAmount').textContent = `€${total.toFixed(2)}`;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function processPayment() {
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const btn = document.getElementById('confirmPaymentBtn');
+            const processingText = document.getElementById('processingText');
+            const processingSpinner = document.getElementById('processingSpinner');
+
+            // Validate based on payment method
+            if (selectedMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardCvv = document.getElementById('cardCvv').value;
+                const cardName = document.getElementById('cardName').value;
+
+                if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
+                    alert('Please fill in all card details');
+                    return;
+                }
+            }
+
+            if (selectedMethod === 'ideal') {
+                const bank = document.getElementById('idealBank').value;
+                if (bank === 'Choose your bank') {
+                    alert('Please select your bank');
+                    return;
+                }
+            }
+
+            // Show processing state
+            btn.disabled = true;
+            processingText.classList.add('hidden');
+            processingSpinner.classList.remove('hidden');
+
+            // Simulate payment processing
+            setTimeout(() => {
+                // Payment successful - complete order
+                completeOrder();
+                closePaymentModal();
+                
+                // Reset button
+                btn.disabled = false;
+                processingText.classList.remove('hidden');
+                processingSpinner.classList.add('hidden');
+            }, 2000);
+        }
+
+        function completeOrder() {
+            // Generate order number
+            const orderNum = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('orderNumber').textContent = orderNum;
+
+            // Show order summary
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
+            const total = subtotal + deliveryFee;
+
+            const orderItems = cart.map(item => `
+                <div class="order-item">
+                    <span class="order-item-name">${item.quantity}× ${item.name}</span>
+                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('orderSummaryItems').innerHTML = orderItems;
+            document.getElementById('orderTotalAmount').textContent = `€${total.toFixed(2)}`;
+
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartBadge();
+
+            // Show order page
+            switchPage('order');
+
+            // Simulate order status updates
+            setTimeout(() => {
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.remove('pending');
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.add('complete');
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').innerHTML = '✓';
+            }, 3000);
+
+            setTimeout(() => {
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.remove('pending');
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.add('complete');
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').innerHTML = '✓';
+                document.querySelector('.qr-instruction').textContent = 'Show this at the counter';
+                document.querySelector('.order-status').textContent = '✓ READY FOR PICKUP';
+            }, 6000);
+        }
+
+        function placeOrder() {
         function renderProducts(filter = 'all', search = '') {
             const grid = document.getElementById('productsGrid');
             let filtered = products;
@@ -1053,72 +1516,6 @@
             document.getElementById('subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('total').textContent = `€${total.toFixed(2)}`;
             document.getElementById('payButton').textContent = `Pay €${total.toFixed(2)} →`;
-        }
-
-        function placeOrder() {
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-
-            const name = document.getElementById('customerName').value;
-            if (!name) {
-                alert('Please enter your name');
-                return;
-            }
-
-            if (deliveryType === 'delivery') {
-                const section = document.getElementById('section').value;
-                const row = document.getElementById('row').value;
-                const seat = document.getElementById('seat').value;
-                
-                if (section === 'Select Section' || !row || !seat) {
-                    alert('Please fill in your seat details');
-                    return;
-                }
-            }
-
-            // Generate order number
-            const orderNum = Math.random().toString(36).substring(2, 8).toUpperCase();
-            document.getElementById('orderNumber').textContent = orderNum;
-
-            // Show order summary
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
-            const total = subtotal + deliveryFee;
-
-            const orderItems = cart.map(item => `
-                <div class="order-item">
-                    <span class="order-item-name">${item.quantity}× ${item.name}</span>
-                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-            `).join('');
-
-            document.getElementById('orderSummaryItems').innerHTML = orderItems;
-            document.getElementById('orderTotalAmount').textContent = `€${total.toFixed(2)}`;
-
-            // Clear cart
-            cart = [];
-            saveCart();
-            updateCartBadge();
-
-            // Show order page
-            switchPage('order');
-
-            // Simulate order status updates
-            setTimeout(() => {
-                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.remove('pending');
-                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.add('complete');
-                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').innerHTML = '✓';
-            }, 3000);
-
-            setTimeout(() => {
-                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.remove('pending');
-                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.add('complete');
-                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').innerHTML = '✓';
-                document.querySelector('.qr-instruction').textContent = 'Show this at the counter';
-                document.querySelector('.order-status').textContent = '✓ READY FOR PICKUP';
-            }, 6000);
         }
     </script>
 </body>
