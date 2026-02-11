@@ -1684,6 +1684,51 @@
             document.getElementById('total').textContent = `€${total.toFixed(2)}`;
             document.getElementById('payButton').textContent = `Pay €${total.toFixed(2)} →`;
         }
+
+        function completeOrder() {
+            // Generate order number
+            const orderNum = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('orderNumber').textContent = orderNum;
+
+            // Show order summary
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
+            const total = subtotal + deliveryFee;
+
+            const orderItems = cart.map(item => `
+                <div class="order-item">
+                    <span class="order-item-name">${item.quantity}× ${item.name}</span>
+                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('orderSummaryItems').innerHTML = orderItems;
+            document.getElementById('orderTotalAmount').textContent = `€${total.toFixed(2)}`;
+
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartBadge();
+
+            // Show order page
+            switchPage('order');
+
+            // Simulate order status updates
+            setTimeout(() => {
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.remove('pending');
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').classList.add('complete');
+                document.querySelectorAll('.tracking-item')[1].querySelector('.tracking-icon').innerHTML = '✓';
+            }, 3000);
+
+            setTimeout(() => {
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.remove('pending');
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').classList.add('complete');
+                document.querySelectorAll('.tracking-item')[2].querySelector('.tracking-icon').innerHTML = '✓';
+                document.querySelector('.qr-instruction').textContent = 'Show this at the counter';
+                document.querySelector('.order-status').textContent = '✓ READY FOR PICKUP';
+            }, 6000);
+        }
     </script>
 </body>
+</html>
 </html>
