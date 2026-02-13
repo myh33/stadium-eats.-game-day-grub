@@ -791,7 +791,7 @@
         <p class="order-number">Order #<span id="orderNumber"></span></p>
 
         <div class="qr-container">
-            <div class="qr-code">▦</div>
+            <div id="qrcode" class="qr-code"></div>
             <p class="qr-instruction">Wait for 'Ready' status</p>
         </div>
 
@@ -1081,6 +1081,15 @@
             // Generate order number
             const orderNum = Math.random().toString(36).substring(2, 8).toUpperCase();
             document.getElementById('orderNumber').textContent = orderNum;
+            
+            // Generate QR code
+            setTimeout(() => {
+                if (typeof QRious !== 'undefined') {
+                    generateQRCode(orderNum);
+                } else {
+                    console.error('QRious library not loaded');
+                }
+            }, 100);
 
             // Show order summary
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -1119,6 +1128,31 @@
                 document.querySelector('.qr-instruction').textContent = 'Show this at the counter';
                 document.querySelector('.order-status').textContent = '✓ READY FOR PICKUP';
             }, 6000);
+        }
+    </script>
+    
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        // Generate QR code function
+        function generateQRCode(orderNumber) {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = ''; // Clear existing
+            
+            try {
+                const qr = new QRious({
+                    element: document.createElement('canvas'),
+                    value: `STADIUM-ORDER-${orderNumber}`,
+                    size: 200,
+                    background: 'white',
+                    foreground: 'black',
+                    level: 'H'
+                });
+                qrContainer.appendChild(qr.element);
+            } catch (error) {
+                console.error('QR Generation Error:', error);
+                qrContainer.innerHTML = '<div style="font-size: 3rem;">📱</div><p>Order: ' + orderNumber + '</p>';
+            }
         }
     </script>
 </body>
